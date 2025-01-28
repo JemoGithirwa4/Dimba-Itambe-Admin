@@ -12,6 +12,10 @@ app.get("/", (req, res) => {
     res.render("home.ejs", { activePage: "latest" });
 });
 
+app.get("/posts", (req, res) => {
+    res.render("posts.ejs", { activePage: "latest" });
+});
+
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });

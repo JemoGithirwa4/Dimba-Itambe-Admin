@@ -12,3 +12,26 @@ header.navbar input[type="text"] {
     border-radius: 4px;
     padding: 5px;
 }
+
+.nav-link {
+    color: black;
+}
+
+.nav-link.active {
+    color: white;
+    background-color: green;
+}
+
+/*Latest Page styles */
+.nav-tabs .nav-link.active {
+    background-color: green;
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: 20px;
+}
+
+.custom-nav {
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
