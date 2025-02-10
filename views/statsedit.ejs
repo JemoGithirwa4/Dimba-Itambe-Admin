@@ -1,0 +1,48 @@
+<%- include("partials/header.ejs") %>
+
+<form action="/update-player-stats" method="POST" class="container mt-4 p-4 bg-light rounded shadow-sm">
+    <h4 class="mb-3">Update Player Stats</h4>
+  
+    <div class="mb-3">
+      <label for="playerSelect" class="form-label">Select Player</label>
+      <select class="form-control" id="playerSelect" name="playerId" required>
+        <option value="">-- Select Player --</option>
+        <!-- Populate dynamically -->
+      </select>
+    </div>
+  
+    <div class="mb-3">
+      <label for="goals" class="form-label">Goals Scored</label>
+      <input type="number" class="form-control" id="goals" name="goals" required>
+    </div>
+  
+    <div class="mb-3">
+      <label for="assists" class="form-label">Assists</label>
+      <input type="number" class="form-control" id="assists" name="assists" required>
+    </div>
+  
+    <div class="mb-3">
+      <label for="yellowCards" class="form-label">Yellow Cards</label>
+      <input type="number" class="form-control" id="yellowCards" name="yellowCards" required>
+    </div>
+  
+    <div class="mb-3">
+      <label for="redCards" class="form-label">Red Cards</label>
+      <input type="number" class="form-control" id="redCards" name="redCards" required>
+    </div>
+  
+    <div class="mb-3">
+      <label for="matchesPlayed" class="form-label">Matches Played</label>
+      <input type="number" class="form-control" id="matchesPlayed" name="matchesPlayed" required>
+    </div>
+  
+    <div class="mb-3">
+      <label for="minutesPlayed" class="form-label">Minutes Played</label>
+      <input type="number" class="form-control" id="minutesPlayed" name="minutesPlayed" required>
+    </div>
+  
+    <button type="submit" class="btn btn-success">Update Stats</button>
+</form>
+  
+
+<%- include("partials/footer.ejs") %>

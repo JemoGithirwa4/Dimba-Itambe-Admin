@@ -16,6 +16,42 @@ app.get("/posts", (req, res) => {
     res.render("posts.ejs", { activePage: "latest" });
 });
 
+app.get("/watch", (req, res) => {
+    res.render("watch.ejs", { activePage: "watch" });
+});
+
+app.get("/videos", (req, res) => {
+    res.render("videos.ejs", { activePage: "watch" });
+});
+
+app.get("/teams", (req, res) => {
+    res.render("teams.ejs", { activePage: "teams" });
+});
+
+app.get("/new-team", (req, res) => {
+    res.render("newteam.ejs", { activePage: "teams" });
+});
+
+app.get("/player", (req, res) => {
+    res.render("player.ejs", { activePage: "teams" });
+});
+
+app.get("/edit-player-stats", (req, res) => {
+    res.render("statsedit.ejs", { activePage: "teams" });
+});
+
+app.get("/edit-player-stats", (req, res) => {
+    res.render("statsedit.ejs", { activePage: "teams" });
+});
+
+app.get("/fixtures", (req, res) => {
+    res.render("fixtures.ejs", { activePage: "fix-res" });
+});
+
+app.get("/add-fixture", (req, res) => {
+    res.render("fixture-new.ejs", { activePage: "fix-res" });
+});
+
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });

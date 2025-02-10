@@ -1,0 +1,30 @@
+<%- include("partials/header.ejs") %>
+
+<form action="/upload-team" method="POST" enctype="multipart/form-data" class="container mt-4 p-4 bg-light rounded shadow-sm">
+    <h4 class="mb-3">Add New Team</h4>
+    
+    <div class="mb-3">
+      <label for="teamName" class="form-label">Team Name</label>
+      <input type="text" class="form-control" id="teamName" name="teamName" required>
+    </div>
+    
+    <div class="mb-3">
+      <label for="teamLogo" class="form-label">Team Logo</label>
+      <input type="file" class="form-control" id="teamLogo" name="teamLogo" accept="image/*" required>
+    </div>
+    
+    <div class="mb-3">
+      <label for="teamStadium" class="form-label">Home Stadium</label>
+      <input type="text" class="form-control" id="teamStadium" name="teamStadium" required>
+    </div>
+    
+    <div class="mb-3">
+      <label for="teamFounded" class="form-label">Year Founded</label>
+      <input type="number" class="form-control" id="teamFounded" name="teamFounded" required>
+    </div>
+    
+    <button type="submit" class="btn btn-primary my-btn">Add Team</button>
+</form>
+  
+
+<%- include("partials/footer.ejs") %>

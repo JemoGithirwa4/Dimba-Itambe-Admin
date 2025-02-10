@@ -19,12 +19,12 @@ header.navbar input[type="text"] {
 
 .nav-link.active {
     color: white;
-    background-color: green;
+    background-color: #27ae60;
 }
 
 /*Latest Page styles */
 .nav-tabs .nav-link.active {
-    background-color: green;
+    background-color: #27ae60;
     color: white;
     font-weight: bold;
     border: none;
@@ -34,4 +34,25 @@ header.navbar input[type="text"] {
 .custom-nav {
     padding-top: 20px;
     padding-bottom: 20px;
+}
+
+.blog label, #featured label {
+    font-weight: bold;
+}
+
+.fix-section {
+    display: none;
+}
+  
+.fix-section.live {
+    display: block;
+}
+
+.heading-mine {
+    color: black;
+}
+
+.my-btn {
+    background-color: #27ae60;
+    border: none;
 }
