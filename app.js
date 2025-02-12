@@ -60,6 +60,10 @@ app.get("/new-job", (req, res) => {
     res.render("new-job.ejs", { activePage: "careers" });
 });
 
+app.get("/shop", (req, res) => {
+    res.render("shop/shop.ejs", { activePage: "shop" });
+});
+
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });

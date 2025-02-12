@@ -28,7 +28,7 @@
         </ul>
     </header>
 
-    <div class="container-fluid">
+    <div class="container-fluid side">
       <div class="row">
         <div class="sidebar border border-right col-md-3 col-lg-2 p-0 bg-body-tertiary">
           <div class="offcanvas-md offcanvas-end bg-body-tertiary" tabindex="-1" id="sidebarMenu" aria-labelledby="sidebarMenuLabel">
@@ -63,7 +63,7 @@
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link d-flex align-items-center gap-2" href="#">
+                  <a class="nav-link d-flex align-items-center gap-2 <%= activePage === 'shop' ? 'active' : '' %>" href="/shop">
                     <i class="fa-brands fa-shopify"></i>
                     Shop
                   </a>
