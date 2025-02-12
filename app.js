@@ -52,6 +52,14 @@ app.get("/add-fixture", (req, res) => {
     res.render("fixture-new.ejs", { activePage: "fix-res" });
 });
 
+app.get("/careers", (req, res) => {
+    res.render("careers.ejs", { activePage: "careers" });
+});
+
+app.get("/new-job", (req, res) => {
+    res.render("new-job.ejs", { activePage: "careers" });
+});
+
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
