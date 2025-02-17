@@ -21,7 +21,32 @@
           <button type="button" class="btn btn-sm btn-outline-secondary">Delete All <i class="fa-solid fa-trash"></i></button>
         </div>
       </div>
-    </div>        
+    </div>  
+    <ul id="postsList">
+      <% articles.forEach(article => { %>
+        <li>
+          <h2><%= article.title %></h2>
+          <small>
+            <% if (article.lastmodifieddate) { %>
+              <% 
+                const dateObj = new Date(article.lastmodifieddate);
+                const formattedDate = dateObj.toDateString(); // "Mon Feb 17 2025"
+                const formattedTime = dateObj.toTimeString().split(" ")[0]; // "05:46:59"
+              %>
+            
+              <p><%= formattedDate %> <%= formattedTime %></p>
+            <% } else { %>
+              <p>No date available</p>
+            <% } %>            
+          </small>
+          <p><%= article.content.substring(0, 200) %>...</p>
+          <input type="hidden" id="articleImage" value="<%= article.imageurl %>">
+          <small>By: <%= article.authorname %></small>
+          <a class="edit article-btn" href="/edit/<%= article.articleid %>">Edit</a>
+          <a class="delete article-btn" href="/api/posts/delete/<%= article.articleid %>">Delete</a>
+        </li>
+      <% }); %>
+    </ul>
   </div>    
 
   <div id="featured" class="tab-content container fix-section">

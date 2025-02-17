@@ -1,15 +1,38 @@
 import express from "express";
 import bodyParser from "body-parser";
+import pg from "pg";
 
 const PORT = process.env.PORT || 3006;
 
 const app = express();
 
+const db = new pg.Client({
+    user: "postgres",
+    host: "localhost",
+    database: "dimbaitambe",
+    password: "@Kukurella17",
+    port: 5432
+});
+  
+db.connect();
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
-app.get("/", (req, res) => {
-    res.render("home.ejs", { activePage: "latest" });
+let articles = []
+
+app.get("/", async (req, res) => {
+    try {
+        const result = await db.query(
+            "SELECT * FROM Articles ORDER BY publisheddate DESC"
+        );
+        articles = result.rows;
+
+        res.render("home.ejs", { activePage: "latest", articles: articles });
+    } catch (err){
+        console.log(err);
+        res.status(500).send("Server Error");
+    }
 });
 
 app.get("/posts", (req, res) => {
@@ -66,6 +89,10 @@ app.get("/shop", (req, res) => {
 
 app.get("/standings", (req, res) => {
     res.render("league/standings.ejs", { activePage: "standings" });
+});
+
+app.get("/settings", (req, res) => {
+    res.render("settings/settings.ejs", { activePage: "settings" });
 });
 
 app.listen(PORT, () => {
