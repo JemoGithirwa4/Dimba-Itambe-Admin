@@ -38,13 +38,13 @@
             </div>
             <div class="offcanvas-body d-md-flex flex-column p-0 pt-lg-3 overflow-y-auto">
               <ul class="nav flex-column">
-                <li class="nav-item">
+                <li class="nav-item <%= activePage === 'latest' ? 'active' : '' %>">
                   <a class="nav-link d-flex align-items-center gap-2 <%= activePage === 'latest' ? 'active' : '' %>" aria-current="page" href="/">
                     <i class="fa-solid fa-layer-group"></i>
                     Latest
                   </a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item <%= activePage === 'watch' ? 'active' : '' %>">
                   <a class="nav-link d-flex align-items-center gap-2 <%= activePage === 'watch' ? 'active' : '' %>" href="/watch">
                     <i class="fa-solid fa-video"></i>
                     Watch
@@ -62,12 +62,12 @@
                     Fixtures & Results
                   </a>
                 </li>
-                <li class="nav-item">
+                <!-- <li class="nav-item">
                   <a class="nav-link d-flex align-items-center gap-2 <%= activePage === 'shop' ? 'active' : '' %>" href="/shop">
                     <i class="fa-brands fa-shopify"></i>
                     Shop
                   </a>
-                </li>
+                </li> -->
                 <li class="nav-item">
                   <a class="nav-link d-flex align-items-center gap-2 <%= activePage === 'careers' ? 'active' : '' %>" href="/careers">
                     <i class="fa-solid fa-briefcase"></i>

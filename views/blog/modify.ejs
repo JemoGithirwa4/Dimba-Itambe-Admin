@@ -1,0 +1,20 @@
+<%- include("../partials/header.ejs") %>
+
+<div class="container my-5">
+    <h1>
+      <%= heading %>
+    </h1>
+
+    <form id="editForm" method="post" action="/update-posts/<%=article.articleid%>">
+        <input type="text" class="form-control mb-2" name="postTitle" value="<%=article.title %>">
+        <input type="url" class="form-control mb-2" name="postImageURL" value="<%=article.imageurl %>">
+        <textarea class="form-control mb-2" name="postBody" rows="8"><%=article.content %></textarea>
+        <input type="text" class="form-control mb-2" name="authorName" value="<%=article.authorname %>">
+        <button class="btn btn-primary w-100 my-btn" type="submit">
+            <%= submit %>
+        </button>
+    </form>
+
+</div>
+
+<%- include("../partials/footer.ejs") %>

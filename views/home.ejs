@@ -42,8 +42,11 @@
           <p><%= article.content.substring(0, 200) %>...</p>
           <input type="hidden" id="articleImage" value="<%= article.imageurl %>">
           <small>By: <%= article.authorname %></small>
+          <a class="view article-btn" href="/view/<%= article.articleid %>">View</a>
           <a class="edit article-btn" href="/edit/<%= article.articleid %>">Edit</a>
-          <a class="delete article-btn" href="/api/posts/delete/<%= article.articleid %>">Delete</a>
+          <form action="/delete/<%= article.articleid %>" method="POST" class="d-inline">
+            <button type="submit" class="delete article-btn">Delete</button>
+          </form>        
         </li>
       <% }); %>
     </ul>
@@ -52,7 +55,14 @@
   <div id="featured" class="tab-content container fix-section">
     <div class="container mt-5">
       <div class="card shadow-lg p-4">
-        <h2 class="text-center mb-4 heading-mine">Add Featured Player</h2>
+        <h2 class="mb-4 heading-mine">Update Featured Players</h2>
+    
+        <form action="/update-featured-player" method="post" id="updateFeaturedForm">
+            <button type="submit" class="btn btn-primary w-100 my-btn">Update Featured Players</button>
+        </form>
+
+        <p id="statusMessage"></p>
+        <!-- <h2 class="text-center mb-4 heading-mine">Add Featured Player</h2>
         <form action="/featured-player" method="post" enctype="multipart/form-data">
           <div class="mb-3">
             <label class="form-label">Player Name</label>
@@ -71,7 +81,7 @@
             <input type="file" class="form-control" name="playerImage" accept="image/*" required>
           </div>
           <button type="submit" class="btn btn-primary w-100 my-btn">Add Featured Player</button>
-        </form>
+        </form> -->
       </div>
     </div>          
   </div>

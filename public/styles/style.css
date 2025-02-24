@@ -3,6 +3,10 @@
     height: 70px;
 }
 
+main {
+    background-color: #f5f7fa;
+}
+
 header.navbar {
     background-color: #000;
     color: #fff;
@@ -17,7 +21,7 @@ header.navbar input[type="text"] {
     color: black;
 }
 
-.nav-link.active {
+.nav-link.active, .nav-item.active {
     color: white;
     background-color: #27ae60;
 }
@@ -90,6 +94,16 @@ li:last-child {
   transition: background-color 0.3s;
 }
 
+a.view {
+    background-color: #000;
+}
+
+a.view:hover {
+    background-color: white;
+    color: #000;
+    border: 2px solid black;
+}
+
 a.edit {
     background-color: green;
     /* margin-right: 10px; */
@@ -99,11 +113,16 @@ a.edit:hover {
   background-color: #0056b3;
 }
   
- a.delete {
+.delete {
     background-color: red;
 }
 
-a.delete:hover {
+.delete:hover {
     background-color: #c0392b;
 }
-  
+
+.article-img {
+    width: 100%;
+    height: 60%;
+    object-fit: contain;
+}

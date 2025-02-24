@@ -1,9 +1,9 @@
-<%- include("partials/header.ejs") %>
+<%- include("../partials/header.ejs") %>
 
 <div class="container mt-5 mb-5">
   <div class="card shadow-lg p-4">
     <h2 class="text-center mb-4 heading-mine">Create a Blog Post</h2>
-    <form class="blog" action="/posts" method="post" enctype="multipart/form-data">
+    <form class="blog" action="/add-post" method="post">
       <div class="mb-3">
         <label class="form-label">Title</label>
         <input type="text" class="form-control" name="postTitle" placeholder="Enter post title" required>
@@ -13,12 +13,16 @@
         <textarea class="form-control" name="postBody" rows="8" placeholder="Write your post here..." required></textarea>
       </div>
       <div class="mb-3">
-        <label class="form-label">Upload Image</label>
-        <input type="file" class="form-control" name="postImage" accept="image/*">
-      </div>
+        <label class="form-label">Upload Image URL</label>
+        <input type="url" class="form-control" name="postImageURL" placeholder="Enter image URL" required>
+      </div>      
+      <div class="mb-3">
+        <label class="form-label">Author Name</label>
+        <input type="text" class="form-control" name="authorName" placeholder="Enter author name" required>
+      </div>      
       <button type="submit" class="btn btn-primary w-100 my-btn">Publish</button>
     </form>
   </div>
 </div>
 
-<%- include("partials/footer.ejs") %>
+<%- include("../partials/footer.ejs") %>
