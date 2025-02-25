@@ -126,3 +126,7 @@ a.edit:hover {
     height: 60%;
     object-fit: contain;
 }
+
+.form-label {
+    font-weight: bold;
+}

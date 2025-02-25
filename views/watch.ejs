@@ -10,6 +10,44 @@
         </div>
       </div>
     </div>        
+
+    <div class="card shadow p-4">
+      <h4 class="text-center">Existing Video Highlights</h4>
+      <div class="table-responsive">
+          <table class="table table-striped mt-3">
+              <thead>
+                  <tr>
+                      <th>#</th>
+                      <th>Match Title</th>
+                      <th>Video</th>
+                      <th>Action</th>
+                  </tr>
+              </thead>
+              <tbody id="videoList">
+                <% if (videos.length === 0) { %>
+                  <tr>
+                      <td colspan="4" class="text-center text-muted">No videos available.</td>
+                  </tr>
+                <% } else { %>
+                  <% videos.forEach((video, index) => { %>
+                      <tr>
+                        <td><%= index + 1 %></td>
+                        <td><%= video.match_title %></td>
+                        <td>
+                          <iframe width="200" height="120" src="<%= video.video_url %>" frameborder="0" allowfullscreen></iframe>
+                        </td>
+                        <td>
+                          <form action="/delete-video/<%= video.id %>" method="POST" class="d-inline">
+                            <button type="submt" class="btn btn-danger btn-sm">Delete</button>
+                          </form>
+                        </td>
+                      </tr>
+                  <% }); %>
+                <% } %>                
+              </tbody>
+          </table>
+      </div>
+    </div>
 </div> 
 
 <%- include("partials/footer.ejs") %>

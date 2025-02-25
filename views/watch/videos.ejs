@@ -1,0 +1,19 @@
+<%- include("../partials/header.ejs") %>
+
+<form action="/video-upload" method="POST" class="container mt-4 p-4 rounded shadow-sm card">
+    <h4 class="mb-3">Upload Football Video Highlight</h4>
+    
+    <div class="mb-3">
+      <label for="videoTitle" class="form-label">Video Title</label>
+      <input type="text" class="form-control" id="videoTitle" placeholder="Video Title" name="videoTitle" required>
+    </div>
+    
+    <div class="mb-3">
+      <label for="videoFile" class="form-label">Video URL</label>
+      <input type="url" class="form-control" name="videoUrl" placeholder="YouTube Embed URL" required>
+    </div>
+    
+    <button type="submit" class="btn btn-primary my-btn">Upload Video</button>
+</form>  
+
+<%- include("../partials/footer.ejs") %>

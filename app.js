@@ -20,7 +20,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
 //Latest page routes
-let articles = []
+let articles = [];
+let videos = [];
 
 app.get("/", async (req, res) => {
     try {
@@ -142,12 +143,45 @@ app.get("/posts", (req, res) => {
     res.render("blog/posts.ejs", { activePage: "latest" });
 });
 
-app.get("/watch", (req, res) => {
-    res.render("watch.ejs", { activePage: "watch" });
+//Watch Page styles start here
+app.get("/watch", async (req, res) => {
+    try {
+        const result = await db.query(
+            "SELECT * FROM video_highlights ORDER BY uploaded_at DESC"
+        );
+        videos = result.rows;
+
+        res.render("watch.ejs", { activePage: "watch", videos: videos });
+    } catch (err){
+        console.log(err);
+        res.status(500).send("Server Error, cannot fetch Videos");
+    }
 });
 
 app.get("/videos", (req, res) => {
-    res.render("videos.ejs", { activePage: "watch" });
+    res.render("watch/videos.ejs", { activePage: "watch" });
+});
+
+app.post("/video-upload", async (req, res) => {
+    const { videoTitle, videoUrl } = req.body;
+
+    try {
+        await db.query("INSERT INTO video_highlights (match_title, video_url) VALUES ($1, $2)", [videoTitle, videoUrl]);
+        res.redirect("/");
+    } catch (err) {
+        console.log(err);
+        res.status(500).send("Server Error");
+    }
+});
+
+app.post("/delete-video/:id", async (req, res) => {
+    const id = req.params.id;
+    try {
+      await db.query("DELETE FROM video_highlights WHERE id = $1", [id]);
+      res.redirect("/");
+    } catch (err) {
+        res.status(500).json({ message: "Error deleting video" });
+    }
 });
 
 app.get("/teams", (req, res) => {
