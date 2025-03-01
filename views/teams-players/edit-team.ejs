@@ -1,0 +1,36 @@
+<%- include("../partials/header.ejs") %>
+
+<form action="/edit-team" method="POST" class="container mt-4 p-4 rounded shadow-sm card">
+    <h4 class="mb-3 fw-bold">Edit Team</h4>
+    <input type="hidden" name="originalTeamName" value="<%= team.teamname %>">
+    
+    <div class="mb-3">
+      <label for="teamName" class="form-label">Team Name</label>
+      <input type="text" class="form-control" id="teamName" name="teamName" value="<%= team.teamname %>" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="teamName" class="form-label">Team Abbreviation</label>
+      <input type="text" class="form-control" id="teamAbb" name="teamAbb" value="<%= team.abb %>" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="teamName" class="form-label">Team Website</label>
+      <input type="text" class="form-control" id="teamWebsite" name="teamWebsite" value="<%= team.website %>" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="teamStadium" class="form-label">City</label>
+      <input type="text" class="form-control" id="teamCity" name="teamCity" value="<%= team.city %>" required>
+    </div>
+    
+    <div class="mb-3">
+      <label for="teamLogo" class="form-label">Team Logo</label>
+      <input type="url" class="form-control" id="teamLogo" name="teamLogo" value="<%= team.logo_url %>" required>
+    </div>
+    
+    <button type="submit" class="btn btn-primary my-btn">Update Team</button>
+</form>
+  
+
+<%- include("../partials/footer.ejs") %>

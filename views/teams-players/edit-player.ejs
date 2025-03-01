@@ -1,0 +1,61 @@
+<%- include("../partials/header.ejs") %>
+
+<form action="/edit-player" method="POST" class="container mt-4 p-4 rounded shadow-sm card">
+    <h4 class="mb-3">Edit Player</h4>
+    <!-- Hidden field for player ID -->
+    <input type="hidden" name="originalPlayerId" value="<%=player.playerid%>">
+    
+    <div class="mb-3">
+      <label for="playerName" class="form-label">First Name</label>
+      <input type="text" class="form-control" id="playerName" name="firstName" value="<%=player.fname%>" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="playerName" class="form-label">Middle Name</label>
+      <input type="text" class="form-control" id="playerName" name="middleName" value="<%=player.mname%>" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="playerName" class="form-label">Last Name</label>
+      <input type="text" class="form-control" id="playerName" name="lastName" value="<%=player.lname%>" required>
+    </div>
+    
+    <div class="mb-3">
+      <label for="playerPosition" class="form-label">Position</label>
+      <input type="text" class="form-control" id="playerPosition" name="playerPosition" value="<%=player.position%>" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="playerNumber" class="form-label">Weight</label>
+      <input type="number" class="form-control" id="playerNumber" name="playerWeight" value="<%=player.weight%>" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="playerNumber" class="form-label">Height</label>
+      <input type="number" step="0.01" class="form-control" id="playerNumber" name="playerHeight" value="<%=player.height%>" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="playerTeam" class="form-label">Nationality</label>
+      <input type="text" class="form-control" id="playerTeam" name="playerNationality" value="<%=player.nationality%>" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="playerNumber" class="form-label">Kit Nmuber</label>
+      <input type="number" class="form-control" id="playerNumber" name="kitNumber" value="<%=player.kitnumber%>" required>
+    </div>
+    
+    <div class="mb-3">
+      <label for="playerTeam" class="form-label">Team</label>
+      <input type="text" class="form-control" id="playerTeam" name="playerTeam" value="<%=player.teamname%>" required>
+    </div>
+    
+    <div class="mb-3">
+      <label for="playerNumber" class="form-label">Image</label>
+      <input type="url" class="form-control" id="playerNumber" name="playerLogo" value="<%=player.image_url%>" required>
+    </div>
+    
+    <button type="submit" class="btn btn-primary my-btn">Update Player</button>
+</form>  
+
+<%- include("../partials/footer.ejs") %>

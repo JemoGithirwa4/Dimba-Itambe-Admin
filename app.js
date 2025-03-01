@@ -22,6 +22,9 @@ app.use(express.static("public"));
 //Latest page routes
 let articles = [];
 let videos = [];
+let teams = [];
+let players = [];
+let stats = [];
 
 app.get("/", async (req, res) => {
     try {
@@ -184,25 +187,266 @@ app.post("/delete-video/:id", async (req, res) => {
     }
 });
 
-app.get("/teams", (req, res) => {
-    res.render("teams.ejs", { activePage: "teams" });
+//Teams & Players page route
+app.get("/teams", async (req, res) => {
+    try {
+        const teamResult = await db.query(
+            "SELECT * FROM team ORDER BY teamname ASC"
+        );
+        teams = teamResult.rows;
+
+        const playerResult = await db.query(
+            "SELECT * FROM player ORDER BY playerid ASC"
+        );
+        players = playerResult.rows;
+
+        const statsResult = await db.query(`
+            SELECT
+                player.fname,
+                player.lname,
+                player.teamname,
+                player.position,
+                stats.playerid,
+                stats.matches_played,
+                stats.minutes_played,
+                stats.goals,
+                stats.assists,
+                stats.yellowcards,
+                stats.redcards
+            FROM stats
+            JOIN player ON stats.playerid = player.playerid;
+        `);
+        stats = statsResult.rows;
+
+        res.render("teams.ejs", { activePage: "teams", teams: teams, players: players, stats: stats });
+    } catch (err){
+        console.log(err);
+        res.status(500).send("Server Error, cannot fetch data from the database");
+    }
 });
 
 app.get("/new-team", (req, res) => {
-    res.render("newteam.ejs", { activePage: "teams" });
+    res.render("teams-players/newteam.ejs", { activePage: "teams" });
+});
+
+//Handle new team upload
+app.post("/upload-team", async (req, res) => {
+    const { teamName, teamAbb, teamWebsite, teamCity, teamLogo } = req.body;
+
+    try {
+        await db.query("INSERT INTO team (teamname, abb, website, city, logo_url) VALUES ($1, $2, $3, $4, $5)", [teamName, teamAbb, teamWebsite, teamCity, teamLogo]);
+        res.redirect("/teams");
+    } catch (err) {
+        console.log(err);
+        res.status(500).send("Server Error, cannot upload new team");
+    }
+});
+
+//Handle editing team details
+app.get("/edit-team/:teamname", async (req, res) => {
+    try {
+        const teamname = req.params.teamname;
+        const result = await db.query(
+            "SELECT * FROM team WHERE teamname = $1", [teamname]
+        );
+
+        let team = result.rows;
+        console.log(team);
+
+        res.render("teams-players/edit-team.ejs", {
+            activePage: "teams",
+            team: team[0]
+        });
+    } catch (error) {
+      res.status(500).send("Error fetching post");
+    }
+});
+
+//Edit team
+app.post("/edit-team", async (req, res) => {
+    const { originalTeamName, teamName, teamAbb, teamWebsite, teamCity, teamLogo } = req.body;
+
+    try {
+        await db.query(
+            "UPDATE team SET teamname = $1, abb = $2, website = $3, city = $4, logo_url = $5 WHERE teamname = $6",
+            [teamName, teamAbb, teamWebsite, teamCity, teamLogo, originalTeamName]
+        );
+        res.redirect("/teams");
+    } catch (err) {
+        console.log(err);
+        res.status(500).send("Server Error");
+    }
+});
+
+// Delete a team
+app.post("/delete/:teamname", async (req, res) => {
+    const teamname = req.params.teamname;
+
+    try {
+      await db.query("DELETE FROM team WHERE teamname = $1", [teamname]);
+      res.redirect("/teams");
+    } catch (err) {
+        res.status(500).json({ message: "Error deleting team" });
+    }
 });
 
 app.get("/player", (req, res) => {
-    res.render("player.ejs", { activePage: "teams" });
+    res.render("teams-players/player.ejs", { activePage: "teams" });
 });
 
-app.get("/edit-player-stats", (req, res) => {
-    res.render("statsedit.ejs", { activePage: "teams" });
+app.post("/upload-player", async (req, res) => {
+    const {
+        firstName,
+        middleName,
+        lastName,
+        playerDob,
+        playerPosition,
+        playerWeight,
+        playerHeight,
+        playerNationality,
+        kitNumber, 
+        playerTeam,
+        playerLogo
+    } = req.body;
+
+    try {
+        await db.query(`
+            INSERT INTO PLAYER 
+            (FNAME, MNAME, LNAME, DOB, POSITION, WEIGHT, HEIGHT, NATIONALITY, KITNUMBER, TEAMNAME, IMAGE_URL)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+            `, [firstName, middleName, lastName, playerDob, playerPosition, 
+                playerWeight, playerHeight, playerNationality, kitNumber, playerTeam, playerLogo]
+        );
+        res.redirect("/teams");
+    } catch (err) {
+        console.log(err);
+        res.status(500).send("Server Error, cannot upload new player");
+    }
 });
 
-app.get("/edit-player-stats", (req, res) => {
-    res.render("statsedit.ejs", { activePage: "teams" });
+//Handle editing team details
+app.get("/edit-player/:id", async (req, res) => {
+    try {
+        const playerName = req.params.id;
+        const result = await db.query(
+            "SELECT * FROM player WHERE playerid = $1", [playerName]
+        );
+
+        let player = result.rows;
+
+        res.render("teams-players/edit-player.ejs", {
+            activePage: "teams",
+            player: player[0]
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).send("Error fetching player details");
+    }
 });
+
+//Edit player
+app.post("/edit-player", async (req, res) => {
+    const {
+        originalPlayerId, 
+        firstName,
+        middleName,
+        lastName,
+        playerPosition,
+        playerWeight,
+        playerHeight,
+        playerNationality,
+        kitNumber,
+        playerTeam,
+        playerLogo
+    } = req.body;
+
+    try {
+        await db.query(
+            `UPDATE player 
+             SET fname = $1, 
+                 mname = $2, 
+                 lname = $3, 
+                 position = $4, 
+                 weight = $5, 
+                 height = $6, 
+                 nationality = $7, 
+                 kitnumber = $8, 
+                 teamname = $9, 
+                 image_url = $10 
+             WHERE playerid = $11`, 
+            [
+                firstName,
+                middleName,
+                lastName,
+                playerPosition,
+                playerWeight,
+                playerHeight,
+                playerNationality,
+                kitNumber,
+                playerTeam,
+                playerLogo,
+                originalPlayerId
+            ]
+        );
+        res.redirect("/teams"); 
+    } catch (err) {
+        console.log(err);
+        res.status(500).send("Server Error");
+    }
+});
+
+//Delete player
+app.post("/delete-player/:id", async (req, res) => {
+    const playerId = req.params.id; 
+
+    try {
+        await db.query("DELETE FROM player WHERE playerid = $1", [playerId]);
+        res.redirect("/teams"); 
+    } catch (err) {
+        console.error("Error deleting player:", err);
+        res.status(500).json({ message: "Error deleting player" });
+    }
+});
+
+app.get("/edit-player-stats/:id", async (req, res) => {
+    try {
+        const playerId = req.params.id;
+        const result = await db.query(`
+            SELECT stats.*, player.fname, player.lname, player.teamname
+            FROM stats
+            JOIN player ON stats.playerid = player.playerid
+            WHERE stats.playerid = $1
+        `, [playerId]);        
+
+        let player = result.rows;
+
+        res.render("teams-players/edit-stats.ejs", {
+            activePage: "teams",
+            stat: player[0]
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).send("Error fetching player stats details");
+    }
+});
+
+//New stats
+app.post("/add-stats", async (req, res) => {
+    try {
+        const { playerid, redcards, yellowcards, goals, assists, cleansheets, matches_played, minutes_played } = req.body;
+
+        await db.query(
+            "INSERT INTO stats (playerid, redcards, yellowcards, goals, assists, cleansheets, matches_played, minutes_played) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
+            [playerid, redcards, yellowcards, goals, assists, cleansheets, matches_played, minutes_played]
+        );
+
+        res.send("Player stats added successfully!");
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Error adding player stats");
+    }
+});
+
 
 app.get("/fixtures", (req, res) => {
     res.render("fixtures.ejs", { activePage: "fix-res" });

@@ -14,13 +14,12 @@
     </ul>
 </div>
 
-<div id="blog" class="container tab-content pb-4 fix-section live">   
+<div id="blog" class="container tab-content pb-4 fix-section live card">   
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
       <h1 class="h2">Teams</h1>
       <div class="btn-toolbar mb-2 mb-md-0">
         <div class="btn-group me-2">
           <button type="button" class="btn btn-sm btn-outline-secondary" onclick="window.location.href='/new-team'">Add <i class="fa-solid fa-plus"></i></button>
-          <button type="button" class="btn btn-sm btn-outline-secondary">Delete All <i class="fa-solid fa-trash"></i></button>
         </div>
       </div>
     </div>  
@@ -33,42 +32,53 @@
                   <th>Team Name</th>
                   <th>City</th>
                   <th>Website</th>
+                  <th>Logo</th>
                   <th>Actions</th>
               </tr>
           </thead>
           <tbody>
-              <tr>
-                  <td>1</td>
-                  <td>Gor Mahia</td>
-                  <td>Nairobi</td>
-                  <td><a href="https://gormahiafc.com" target="_blank">Visit</a></td>
-                  <td>
-                      <button class="btn btn-sm btn-warning"><i class="fa-solid fa-edit"></i> Edit</button>
-                      <button class="btn btn-sm btn-danger"><i class="fa-solid fa-trash"></i> Delete</button>
-                  </td>
-              </tr>
-              <tr>
-                  <td>2</td>
-                  <td>AFC Leopards</td>
-                  <td>Nairobi</td>
-                  <td><a href="https://afcleopards.co.ke" target="_blank">Visit</a></td>
-                  <td>
-                      <button class="btn btn-sm btn-warning"><i class="fa-solid fa-edit"></i> Edit</button>
-                      <button class="btn btn-sm btn-danger"><i class="fa-solid fa-trash"></i> Delete</button>
-                  </td>
-              </tr>
+            <% if (teams.length === 0) { %>
+                <tr>
+                    <td colspan="5" class="text-center text-muted">No teams available.</td>
+                </tr>
+            <% } else { %>
+                <% teams.forEach((team, index) => { %>
+                    <tr>
+                        <td><%= index + 1 %></td>
+                        <td><%= team.teamname %></td>
+                        <td><%= team.city %></td>
+                        <td>
+                            <% if (team.website) { %>
+                                <a href="<%= team.website %>" target="_blank">Visit</a>
+                            <% } else { %>
+                                <span class="text-muted">No website</span>
+                            <% } %>
+                        </td>
+                        <td><img src="<%= team.logo_url %>" alt="<%= team.teamname %> Image"></td>
+                        <td>
+                            <a href="/edit-team/<%= team.teamname %>" class="btn btn-sm btn-warning">
+                                <i class="fa-solid fa-edit"></i> Edit
+                            </a>
+                            <form action="/delete-team/<%= team.teamname %>" method="POST" class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-danger">
+                                    <i class="fa-solid fa-trash"></i> Delete
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                <% }); %>
+            <% } %>
           </tbody>
       </table>
   </div>
 </div> 
 
-<div id="featured" class="container tab-content pb-4 fix-section">   
+<div id="featured" class="container tab-content pb-4 fix-section card">   
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
       <h1 class="h2">Players</h1>
       <div class="btn-toolbar mb-2 mb-md-0">
-        <div class="btn-group me-2">
+        <div class="btn-group">
           <button type="button" class="btn btn-sm btn-outline-secondary" onclick="window.location.href='/player'">Add <i class="fa-solid fa-plus"></i></button>
-          <button type="button" class="btn btn-sm btn-outline-secondary">Delete All <i class="fa-solid fa-trash"></i></button>
         </div>
       </div>
     </div>    
@@ -81,38 +91,43 @@
                   <th>Team</th>
                   <th>Position</th>
                   <th>Nationality</th>
+                  <th>Image</th>
                   <th>Actions</th>
               </tr>
           </thead>
           <tbody>
-              <tr>
-                  <td>1</td>
-                  <td>Michael Olunga</td>
-                  <td>Gor Mahia</td>
-                  <td>Striker</td>
-                  <td>Kenyan</td>
-                  <td>
-                      <button class="btn btn-sm btn-warning"><i class="fa-solid fa-edit"></i> Edit</button>
-                      <button class="btn btn-sm btn-danger"><i class="fa-solid fa-trash"></i> Delete</button>
-                  </td>
-              </tr>
-              <tr>
-                  <td>2</td>
-                  <td>Victor Wanyama</td>
-                  <td>AFC Leopards</td>
-                  <td>Midfielder</td>
-                  <td>Kenyan</td>
-                  <td>
-                      <button class="btn btn-sm btn-warning"><i class="fa-solid fa-edit"></i> Edit</button>
-                      <button class="btn btn-sm btn-danger"><i class="fa-solid fa-trash"></i> Delete</button>
-                  </td>
-              </tr>
+            <% if (players.length > 0) { %>
+                <% players.forEach((player, index) => { %>
+                    <tr>
+                        <td><%= index + 1 %></td>
+                        <td><%= player.fname + " " + player.lname %></td>
+                        <td><%= player.teamname %></td>
+                        <td><%= player.position %></td>
+                        <td><%= player.nationality %></td>
+                        <td><img src="<%= player.image_url %>" alt="<%= player.fname %> Image"></td>
+                        <td>
+                            <a href="/edit-player/<%= player.playerid %>" class="btn btn-sm btn-warning">
+                                <i class="fa-solid fa-edit"></i> Edit
+                            </a>
+                            <form action="/delete-player/<%= player.playerid %>" method="POST" class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-danger">
+                                    <i class="fa-solid fa-trash"></i> Delete
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                <% }); %>
+            <% } else { %>
+                <tr>
+                    <td colspan="6" class="text-center">No players available</td>
+                </tr>
+            <% } %>
           </tbody>
       </table>
   </div>    
 </div> 
 
-<div id="stats" class="container tab-content pb-4 fix-section">   
+<div id="stats" class="container tab-content pb-4 fix-section card">   
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
       <h1 class="h2">Players Stats</h1>
       <div class="btn-toolbar mb-2 mb-md-0">
@@ -141,47 +156,38 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>1</td>
-                    <td>Lionel Messi</td>
-                    <td>Inter Miami</td>
-                    <td>Forward</td>
-                    <td>10</td>
-                    <td>8</td>
-                    <td>2</td>
-                    <td>0</td>
-                    <td>15</td>
-                    <td>1300</td>
-                    <td><button class="btn btn-sm btn-primary my-btn" onclick="window.location.href='/edit-player-stats'">Edit</button></td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>Cristiano Ronaldo</td>
-                    <td>Al-Nassr</td>
-                    <td>Forward</td>
-                    <td>12</td>
-                    <td>5</td>
-                    <td>1</td>
-                    <td>0</td>
-                    <td>14</td>
-                    <td>1250</td>
-                    <td><button class="btn btn-sm btn-primary my-btn" onclick="window.location.href='/edit-player-stats'">Edit</button></td>
-                </tr>
-                <tr>
-                    <td>3</td>
-                    <td>Kevin De Bruyne</td>
-                    <td>Manchester City</td>
-                    <td>Midfielder</td>
-                    <td>4</td>
-                    <td>10</td>
-                    <td>3</td>
-                    <td>0</td>
-                    <td>13</td>
-                    <td>1100</td>
-                    <td><button class="btn btn-sm btn-primary my-btn" onclick="window.location.href='/edit-player-stats'">Edit</button></td>
-                </tr>
+                <% if (stats.length > 0) { %>
+                    <% stats.forEach((stat, index) => { %>
+                        <tr>
+                            <td><%= index + 1 %></td>
+                            <td><%= stat.fname + " " + stat.lname %></td>
+                            <td><%= stat.teamname %></td>
+                            <td><%= stat.position %></td>
+                            <td><%= stat.goals %></td>
+                            <td><%= stat.assists %></td>
+                            <td><%= stat.yellowcards %></td>
+                            <td><%= stat.redcards %></td>
+                            <td><%= stat.matches_played %></td>
+                            <td><%= stat.minutes_played %></td>
+                            <td>
+                                <a href="/edit-player-stats/<%= stat.playerid %>" class="btn btn-sm btn-warning">
+                                    <i class="fa-solid fa-edit"></i> Edit
+                                </a>
+                                <form action="/delete-player/<%= stat.playerid %>" method="POST" class="d-inline">
+                                    <button type="submit" class="btn btn-sm btn-danger">
+                                        <i class="fa-solid fa-trash"></i> Delete
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    <% }); %>
+                <% } else { %>
+                    <tr>
+                        <td colspan="11" class="text-center text-muted">No stats data available.</td>
+                    </tr>
+                <% } %>
             </tbody>
-        </table>
+        </table>        
     </div> 
 </div> 
 

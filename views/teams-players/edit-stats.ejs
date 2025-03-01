@@ -1,0 +1,55 @@
+<%- include("../partials/header") %> 
+
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Edit Player Stats</h2>
+    <div class="card shadow p-4">
+        <form action="/update-stats/<%= stat.playerid %>" method="POST">
+            <div class="row">
+                <div class="col-md-6">
+                    <label class="form-label">Player Name</label>
+                    <input type="text" class="form-control" value="<%= stat.fname + ' ' + stat.lname %>" disabled>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Team</label>
+                    <input type="text" class="form-control" value="<%= stat.teamname %>" disabled>
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col-md-4">
+                    <label for="goals" class="form-label">Goals</label>
+                    <input type="number" class="form-control" id="goals" name="goals" value="<%= stat.goals %>" required>
+                </div>
+                <div class="col-md-4">
+                    <label for="assists" class="form-label">Assists</label>
+                    <input type="number" class="form-control" id="assists" name="assists" value="<%= stat.assists %>" required>
+                </div>
+                <div class="col-md-4">
+                    <label for="yellowcards" class="form-label">Yellow Cards</label>
+                    <input type="number" class="form-control" id="yellowcards" name="yellowcards" value="<%= stat.yellowcards %>" required>
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col-md-4">
+                    <label for="redcards" class="form-label">Red Cards</label>
+                    <input type="number" class="form-control" id="redcards" name="redcards" value="<%= stat.redcards %>" required>
+                </div>
+                <div class="col-md-4">
+                    <label for="matches_played" class="form-label">Matches Played</label>
+                    <input type="number" class="form-control" id="matches_played" name="matches_played" value="<%= stat.matches_played %>" required>
+                </div>
+                <div class="col-md-4">
+                    <label for="minutes_played" class="form-label">Minutes Played</label>
+                    <input type="number" class="form-control" id="minutes_played" name="minutes_played" value="<%= stat.minutes_played %>" required>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary w-100 my-btn">Update Stats</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<%- include("../partials/footer") %> 
