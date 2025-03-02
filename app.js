@@ -473,13 +473,94 @@ app.post("/refresh-stats", async (req, res) => {
     }
 });
 
-app.get("/fixtures", (req, res) => {
-    res.render("fixtures.ejs", { activePage: "fix-res" });
+//Fixtures and Results page
+app.get("/fixtures", async (req, res) => {
+    try {
+        const result = await db.query(`
+            SELECT MATCHID, MDATE, MTIME, HOMETEAM, AWAYTEAM, HOME_SCORE, AWAY_SCORE, HOSTEDBY, STATUS
+            FROM MATCH
+            ORDER BY MDATE, MTIME;
+        `);
+
+        res.render("fixtures.ejs", { 
+            activePage: "fix-res", 
+            fixtures: result.rows 
+        });
+    } catch (err) {
+        console.error("Error fetching fixtures:", err);
+        res.status(500).send("Server Error, unable to fetch fixtures");
+    }
 });
 
 app.get("/add-fixture", (req, res) => {
-    res.render("fixture-new.ejs", { activePage: "fix-res" });
+    res.render("fixtures/add-fixture.ejs", { activePage: "fix-res" });
 });
+
+//Add fixture
+app.post("/add-fixture", async (req, res) => {
+    try {
+        const { matchDate, kickoffTime, homeTeam, awayTeam, venue } = req.body;
+
+        const insertQuery = `
+            INSERT INTO MATCH (MDATE, MTIME, HOMETEAM, AWAYTEAM, HOSTEDBY) 
+            VALUES ($1, $2, $3, $4, $5)
+        `;
+
+        await db.query(insertQuery, [matchDate, kickoffTime, homeTeam, awayTeam, venue]);
+
+        res.redirect("/fixtures");
+
+    } catch (error) {
+        console.error("Error adding fixture:", error);
+        res.status(500).send("Internal Server Error");
+    }
+});
+
+
+//Edit fixture
+app.get("/edit-fixture/:matchid", async (req, res) => {
+    try {
+        const matchid = req.params.matchid;
+        const result = await db.query("SELECT * FROM MATCH WHERE MATCHID = $1", [matchid]);
+
+        res.render("fixtures/edit-fixtures.ejs", { fixture: result.rows[0], activePage: "fixtures" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Server error");
+    }
+});
+
+app.post("/update-fixture/:id", async (req, res) => {
+    try {
+        const { hometeam, awayteam, venue, homescore, awayscore, status } = req.body;
+        const fixtureId = req.params.id;
+
+        await db.query(
+            "UPDATE MATCH SET HOMETEAM = $1, AWAYTEAM = $2, HOSTEDBY = $3, HOME_SCORE = $4, AWAY_SCORE = $5, STATUS = $6 WHERE MATCHID = $7",
+            [hometeam, awayteam, venue, homescore, awayscore, status, fixtureId]
+        );
+
+        res.redirect("/fixtures");
+    } catch (error) {
+        console.error("Error updating fixture:", error);
+        res.status(500).send("Internal Server Error");
+    }
+});
+
+//Delete fixture
+app.post("/delete-fixture/:id", async (req, res) => {
+    try {
+        const matchId = req.params.id;
+
+        await db.query("DELETE FROM MATCH WHERE MATCHID = $1", [matchId]);
+
+        res.redirect("/fixtures");
+    } catch (error) {
+        console.error("Error deleting fixture:", error);
+        res.status(500).send("Internal Server Error");
+    }
+});
+
 
 app.get("/careers", (req, res) => {
     res.render("careers.ejs", { activePage: "careers" });

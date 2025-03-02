@@ -64,6 +64,7 @@ header.navbar input[type="text"] {
 .my-btn {
     background-color: #27ae60;
     border: none;
+    color: white;
 }
 
 small {

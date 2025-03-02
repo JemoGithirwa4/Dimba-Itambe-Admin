@@ -1,0 +1,34 @@
+<%- include("../partials/header") %> 
+
+<div class="container mt-4 card p-5">
+    <h2 class="text-center">Add New Fixture</h2>
+    <form action="/add-fixture" method="POST">
+        <div class="mb-3">
+            <label for="homeTeam" class="form-label">Home Team</label>
+            <input type="text" class="form-control" id="homeTeam" name="homeTeam" placeholder="Home team name" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="awayTeam" class="form-label">Away Team</label>
+            <input type="text" class="form-control" id="awayTeam" name="awayTeam" placeholder="Away team name" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="venue" class="form-label">Venue</label>
+            <input type="text" class="form-control" id="venue" name="venue" placeholder="Stadium name" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="matchDate" class="form-label">Match Date</label>
+            <input type="date" class="form-control" id="matchDate" name="matchDate" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="kickoffTime" class="form-label">Kickoff Time</label>
+            <input type="time" class="form-control" id="kickoffTime" name="kickoffTime" required>
+        </div>
+
+        <button type="submit" class="btn btn-success my-btn w-100">Add Fixture</button>
+    </form>
+</div>
+<%- include("../partials/footer") %> 

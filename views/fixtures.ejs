@@ -1,58 +1,74 @@
 <%- include("partials/header.ejs") %>
 
-<div>
+<div class="card mt-5">
     <div id="fixtures" class="container tab-content pb-4 fix-section live">   
         <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-          <h1 class="h2">Fixtures</h1>
+          <h1 class="h2">Fixtures & Results</h1>
           <div class="btn-toolbar mb-2 mb-md-0">
             <div class="btn-group me-2">
+              <form action="/search-player-stats" method="GET" class="d-flex mx-5">
+                <input type="text" name="query" id="searchInputFix" class="form-control me-2" placeholder="Search by fixture..." required>
+              </form>
               <button type="button" class="btn btn-sm btn-outline-secondary" onclick="window.location.href='/add-fixture'">Add <i class="fa-solid fa-plus"></i></button>
-              <button type="button" class="btn btn-sm btn-outline-secondary">Delete All <i class="fa-solid fa-trash"></i></button>
             </div>
           </div>
         </div>
         
         <div class="table-responsive mt-4">
-            <h4>Fixtures & Results</h4>
-            <table class="table table-striped table-bordered">
-              <thead class="table-dark">
+          <table class="table table-striped table-bordered">
+            <thead class="table-dark">
+              <tr>
+                <th>#</th>
+                <th>Date</th>
+                <th>Home Team</th>
+                <th>Away Team</th>
+                <th>Venue</th>
+                <th>Kickoff</th>
+                <th>Result</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if (fixtures.length > 0) { %>
+                <% fixtures.forEach((fixture, index) => { %>
+                  <tr>
+                    <td><%= index + 1 %></td>
+                    <td>
+                      <% 
+                        const dateObj = new Date(fixture.mdate);
+                        const formattedDate = dateObj.toDateString(); // "Mon Feb 17 2025"
+                      %>
+                      <%= formattedDate %> 
+                    </td>
+                    <td><%= fixture.hometeam %></td>
+                    <td><%= fixture.awayteam %></td>
+                    <td><%= fixture.hostedby %></td>
+                    <td><%= fixture.mtime %></td>
+                    <td>
+                      <%= (fixture.home_score !== null && fixture.away_score !== null) ? 
+                          `${fixture.home_score} - ${fixture.away_score}` : 'N/A' %>
+                    </td>
+                    <td><%= fixture.status %></td>
+                    <td>
+                      <a href="/edit-fixture/<%= fixture.matchid %>" class="btn btn-sm btn-warning">
+                        <i class="fa-solid fa-edit"></i> Edit
+                      </a>
+                      <form action="/delete-fixture/<%= fixture.matchid %>" method="POST" class="d-inline">
+                        <button type="submit" class="btn btn-sm btn-danger">
+                            <i class="fa-solid fa-trash"></i> Delete
+                        </button>
+                      </form>
+                    </td>
+                  </tr>
+                <% }); %>
+              <% } else { %>
                 <tr>
-                  <th>#</th>
-                  <th>Date</th>
-                  <th>Home Team</th>
-                  <th>Away Team</th>
-                  <th>Venue</th>
-                  <th>Kickoff</th>
-                  <th>Result</th>
-                  <th>Status</th>
-                  <th>Actions</th>
+                  <td colspan="9" class="text-center text-muted">No fixtures available.</td>
                 </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>1</td>
-                  <td>2025-02-15</td>
-                  <td>Chelsea</td>
-                  <td>Arsenal</td>
-                  <td>Stamford Bridge</td>
-                  <td>18:30</td>
-                  <td>2 - 1</td>
-                  <td>Completed</td>
-                  <td><button class="btn btn-sm btn-primary my-btn">Edit <i class="fa-solid fa-pen"></i></button></td>
-                </tr>
-                <tr>
-                  <td>2</td>
-                  <td>2025-02-20</td>
-                  <td>Man City</td>
-                  <td>Liverpool</td>
-                  <td>Etihad Stadium</td>
-                  <td>20:00</td>
-                  <td>-</td>
-                  <td>Upcoming</td>
-                  <td><button class="btn btn-sm btn-primary my-btn">Edit <i class="fa-solid fa-pen"></i></button></td>
-                </tr>
-              </tbody>
-            </table>
+              <% } %>
+            </tbody>
+          </table>          
         </div>                
     </div> 
 </div>

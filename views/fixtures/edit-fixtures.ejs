@@ -1,0 +1,49 @@
+<%- include("../partials/header") %> 
+
+<div class="container mt-4 card p-5">
+    <h2 class="mb-3">Edit Fixture</h2>
+    <form action="/update-fixture/<%= fixture.matchid %>" method="POST">
+      <div class="row">  
+        <!-- Home Team -->
+        <div class="col-md-6 mb-3">
+          <label for="hometeam" class="form-label">Home Team</label>
+          <input type="text" id="hometeam" name="hometeam" class="form-control" value="<%= fixture.hometeam %>" required readonly>
+        </div>
+  
+        <!-- Away Team -->
+        <div class="col-md-6 mb-3">
+          <label for="awayteam" class="form-label">Away Team</label>
+          <input type="text" id="awayteam" name="awayteam" class="form-control" value="<%= fixture.awayteam %>" required readonly>
+        </div>
+  
+        <!-- Venue -->
+        <div class="col-md-6 mb-3">
+          <label for="venue" class="form-label">Venue</label>
+          <input type="text" id="venue" name="venue" class="form-control" value="<%= fixture.hostedby %>" required>
+        </div>
+  
+        <!-- Home Score -->
+        <div class="col-md-3 mb-3">
+          <label for="home_score" class="form-label">Home Score</label>
+          <input type="number" id="home_score" name="homescore" class="form-control" value="<%= fixture.home_score !== null ? fixture.home_score : '' %>">
+        </div>
+  
+        <!-- Away Score -->
+        <div class="col-md-3 mb-3">
+          <label for="away_score" class="form-label">Away Score</label>
+          <input type="number" id="away_score" name="awayscore" class="form-control" value="<%= fixture.away_score !== null ? fixture.away_score : '' %>">
+        </div>
+  
+        <!-- Match Status -->
+        <div class="col-md-6 mb-3">
+          <label for="status" class="form-label">Match Status</label>
+          <select id="status" name="status" class="form-control">
+            <option value="Not Completed" <%= fixture.status === "Upcoming" ? "selected" : "" %>>Not Completed</option>
+            <option value="Completed" <%= fixture.status === "Completed" ? "selected" : "" %>>Completed</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary my-btn">Update Fixture</button>
+      </div>
+    </form>
+</div>
+<%- include("../partials/footer") %> 
