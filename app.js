@@ -408,6 +408,7 @@ app.post("/delete-player/:id", async (req, res) => {
     }
 });
 
+//Player stats
 app.get("/edit-player-stats/:id", async (req, res) => {
     try {
         const playerId = req.params.id;
@@ -430,23 +431,47 @@ app.get("/edit-player-stats/:id", async (req, res) => {
     }
 });
 
-//New stats
-app.post("/add-stats", async (req, res) => {
+app.post("/update-stats/:id", async (req, res) => {
     try {
-        const { playerid, redcards, yellowcards, goals, assists, cleansheets, matches_played, minutes_played } = req.body;
+        const playerId = req.params.id;
+        const { matches_played, minutes_played, goals, assists, yellowcards, redcards } = req.body;
 
+        // Update stats in the database
         await db.query(
-            "INSERT INTO stats (playerid, redcards, yellowcards, goals, assists, cleansheets, matches_played, minutes_played) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
-            [playerid, redcards, yellowcards, goals, assists, cleansheets, matches_played, minutes_played]
+            `UPDATE stats 
+             SET matches_played = $1, 
+                 minutes_played = $2, 
+                 goals = $3, 
+                 assists = $4, 
+                 yellowcards = $5, 
+                 redcards = $6
+             WHERE playerid = $7`,
+            [matches_played, minutes_played, goals, assists, yellowcards, redcards, playerId]
         );
 
-        res.send("Player stats added successfully!");
+        res.redirect("/teams"); 
     } catch (error) {
         console.error(error);
-        res.status(500).send("Error adding player stats");
+        res.status(500).send("Error updating player stats");
     }
 });
 
+//Refresh stats to include new players
+app.post("/refresh-stats", async (req, res) => {
+    try {
+        await db.query(`
+            INSERT INTO stats (playerid, matches_played, minutes_played, goals, assists, yellowcards, redcards)
+            SELECT playerid, 0, 0, 0, 0, 0, 0
+            FROM player
+            WHERE playerid NOT IN (SELECT playerid FROM stats);
+        `);
+
+        res.redirect("/teams"); 
+    } catch (err) {
+        console.error("Error initializing stats:", err);
+        res.status(500).send("Server Error: Unable to refresh stats");
+    }
+});
 
 app.get("/fixtures", (req, res) => {
     res.render("fixtures.ejs", { activePage: "fix-res" });
