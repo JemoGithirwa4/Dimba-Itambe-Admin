@@ -1,0 +1,55 @@
+<%- include("../partials/header.ejs") %>
+
+<form action="/upload-job" method="POST" class="container mt-4 mb-5 p-4 rounded shadow-sm card">
+    <h4 class="mb-3 text-center fw-bold">New Job</h4>
+  
+    <div class="mb-3">
+      <label for="jobTitle" class="form-label">Job Title</label>
+      <input type="text" class="form-control" id="jobTitle" name="title" placeholder="Enter job title" required>
+    </div>
+  
+    <div class="mb-3">
+      <label for="jobDescription" class="form-label">Job Description</label>
+      <textarea class="form-control" id="jobDescription" name="description" rows="4" placeholder="Enter job description" required></textarea>
+    </div>
+  
+    <div class="mb-3">
+      <label for="jobLocation" class="form-label">Location</label>
+      <input type="text" class="form-control" id="jobLocation" name="location" placeholder="Enter job location" required>
+    </div>
+  
+    <div class="mb-3">
+      <label for="jobType" class="form-label">Job Type</label>
+      <select class="form-control" id="jobType" name="job_type" required>
+        <option value="Full-Time">Full-Time</option>
+        <option value="Part-Time">Part-Time</option>
+        <option value="Contract">Contract</option>
+        <option value="Internship">Internship</option>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label for="openings" class="form-label">Job Openings</label>
+      <input type="number" class="form-control" id="openings" name="openings" placeholder="Enter number of employees needed" required>
+    </div>
+  
+    <div class="mb-3">
+      <label for="applicationDeadline" class="form-label">Application Deadline</label>
+      <input type="date" class="form-control" id="applicationDeadline" name="deadline" required>
+    </div>
+
+    <!-- New Fields for Requirements and Responsibilities -->
+    <div class="mb-3">
+      <label for="requirements" class="form-label">Job Requirements (Comma Separated)</label>
+      <textarea class="form-control" id="requirements" name="requirements" rows="3" placeholder="Example: Strong analytical skills, 3 years experience, Knowledge of football tactics" required></textarea>
+    </div>
+
+    <div class="mb-3">
+      <label for="responsibilities" class="form-label">Job Responsibilities (Comma Separated)</label>
+      <textarea class="form-control" id="responsibilities" name="responsibilities" rows="3" placeholder="Example: Attend matches, Analyze player statistics, Provide reports" required></textarea>
+    </div>
+  
+    <button type="submit" class="btn btn-success my-btn">Add Job</button>
+</form>
+
+<%- include("../partials/footer.ejs") %>

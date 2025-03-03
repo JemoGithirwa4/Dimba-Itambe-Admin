@@ -561,17 +561,55 @@ app.post("/delete-fixture/:id", async (req, res) => {
     }
 });
 
-
-app.get("/careers", (req, res) => {
-    res.render("careers.ejs", { activePage: "careers" });
+//Careers page
+app.get("/careers", async (req, res) => {
+    try {
+        const result = await db.query("SELECT * FROM jobs ORDER BY deadline ASC");
+        res.render("careers.ejs", { activePage: "careers", jobs: result.rows });
+    } catch (error) {
+        console.error("Error fetching jobs:", error);
+        res.status(500).send("Server Error");
+    }
 });
 
 app.get("/new-job", (req, res) => {
-    res.render("new-job.ejs", { activePage: "careers" });
+    res.render("careers/new-job.ejs", { activePage: "careers" });
 });
 
-app.get("/shop", (req, res) => {
-    res.render("shop/shop.ejs", { activePage: "shop" });
+app.post('/upload-job', async (req, res) => {
+    const { title, description, location, job_type, openings, deadline, requirements, responsibilities } = req.body;
+
+    try {
+        await db.query(
+            `INSERT INTO jobs (title, description, location, job_type, openings, deadline, requirements, responsibilities) 
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+            [
+                title,
+                description,
+                location,
+                job_type,
+                openings,
+                deadline,
+                JSON.stringify(requirements.split(',').map(item => item.trim())),
+                JSON.stringify(responsibilities.split(',').map(item => item.trim()))
+            ]
+        );
+        res.redirect('/careers'); 
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Error adding job");
+    }
+});
+
+app.post("/careers/delete/:id", async (req, res) => {
+    const id = req.params;
+    try {
+        await db.query("DELETE FROM jobs WHERE id = $1", [id]);
+        res.redirect("/careers");
+    } catch (error) {
+        console.error("Error deleting job:", error);
+        res.status(500).send("Server Error");
+    }
 });
 
 app.get("/standings", (req, res) => {
