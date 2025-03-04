@@ -74,7 +74,7 @@
                 <span>OTHER</span>
               </h6>
               <ul class="nav flex-column mb-auto">
-                <li class="nav-item">
+                <li class="nav-item <%= activePage === 'standings' ? 'active' : '' %>">
                   <a class="nav-link d-flex align-items-center gap-2 <%= activePage === 'standings' ? 'active' : '' %>" href="/standings">
                     <i class="fa-solid fa-table-cells"></i>
                     League Standings
@@ -85,12 +85,6 @@
               <hr class="my-3">
         
               <ul class="nav flex-column mb-auto">
-                <li class="nav-item">
-                  <a class="nav-link d-flex align-items-center gap-2 <%= activePage === 'settings' ? 'active' : '' %>" href="/settings">
-                    <i class="fa-solid fa-gear"></i>
-                    Admin Settings
-                  </a>
-                </li>
                 <li class="nav-item">
                   <a class="nav-link d-flex align-items-center gap-2" href="#">
                     <i class="fa-solid fa-arrow-right-from-bracket"></i>

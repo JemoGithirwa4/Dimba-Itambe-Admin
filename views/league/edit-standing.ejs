@@ -1,0 +1,48 @@
+<%- include("../partials/header.ejs") %>
+
+<div class="container mt-4">
+    <h4 class="mb-3 text-center fw-bold">Edit League Standings</h4>
+    
+    <form action="/update-standing" method="POST" class="p-4 rounded shadow-sm card">
+        <input type="hidden" name="id" value="<%= standing.id %>">
+
+        <div class="mb-3">
+            <label class="form-label">Team</label>
+            <input type="text" class="form-control" value="<%= standing.team_id %>" readonly>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Matches Played</label>
+            <input type="number" class="form-control" name="matches_played" value="<%= standing.matches_played %>" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Wins</label>
+            <input type="number" class="form-control" name="wins" value="<%= standing.wins %>" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Draws</label>
+            <input type="number" class="form-control" name="draws" value="<%= standing.draws %>" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Losses</label>
+            <input type="number" class="form-control" name="losses" value="<%= standing.losses %>" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Goals For</label>
+            <input type="number" class="form-control" name="goals_for" value="<%= standing.goals_for %>" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Goals Against</label>
+            <input type="number" class="form-control" name="goals_against" value="<%= standing.goals_against %>" required>
+        </div>
+
+        <button type="submit" class="btn btn-success my-btn">Update Standings</button>
+    </form>
+</div>
+
+<%- include("../partials/footer.ejs") %>

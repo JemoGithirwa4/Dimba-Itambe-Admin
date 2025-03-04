@@ -612,8 +612,66 @@ app.post("/careers/delete/:id", async (req, res) => {
     }
 });
 
-app.get("/standings", (req, res) => {
-    res.render("league/standings.ejs", { activePage: "standings" });
+app.get("/standings", async (req, res) => {
+    try {
+        const result = await db.query("SELECT * FROM league_standings ORDER BY points DESC, goal_difference DESC");
+        res.render("standings.ejs", { activePage: "standings", standings: result.rows });
+    } catch (err) {
+        console.error("Error fetching standings:", err);
+        res.status(500).send("Server Error: Unable to fetch standings");
+    }
+});
+
+//Refresh league standings to include new teams
+app.post("/refresh-standings", async (req, res) => {
+    try {
+        await db.query(`
+            INSERT INTO league_standings (team_id, matches_played, wins, draws, losses, goals_for, goals_against)
+            SELECT teamname, 0, 0, 0, 0, 0, 0
+            FROM team
+            WHERE teamname NOT IN (SELECT team_id FROM league_standings);
+        `);
+
+        res.redirect("/standings"); 
+    } catch (err) {
+        console.error("Error initializing standings:", err);
+        res.status(500).send("Server Error: Unable to refresh standings");
+    }
+});
+
+//Render edit page for standings
+app.get("/edit-league-standings/:id", async (req, res) => {
+    try {
+        const team_id = req.params.id;
+        const result = await db.query("SELECT * FROM league_standings WHERE id = $1", [team_id]);
+
+        if (result.rows.length > 0) {
+            res.render("league/edit-standing.ejs", { activePage: "standings", standing: result.rows[0] });
+        } else {
+            res.status(404).send("Team not found in standings.");
+        }
+    } catch (error) {
+        console.error("Error fetching team standings:", error);
+        res.status(500).send("Server error.");
+    }
+});
+
+//Update standings
+app.post("/update-standing", async (req, res) => {
+    try {
+        const { id, matches_played, wins, draws, losses, goals_for, goals_against } = req.body;
+
+        await db.query(`
+            UPDATE league_standings 
+            SET matches_played = $1, wins = $2, draws = $3, losses = $4, goals_for = $5, goals_against = $6 
+            WHERE id = $7
+        `, [matches_played, wins, draws, losses, goals_for, goals_against, id]);
+
+        res.redirect("/standings");
+    } catch (error) {
+        console.error("Error updating standings:", error);
+        res.status(500).send("Server error.");
+    }
 });
 
 app.get("/settings", (req, res) => {
