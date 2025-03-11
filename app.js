@@ -40,6 +40,10 @@ app.get("/", async (req, res) => {
     }
 });
 
+app.get("/login", (req, res) => {
+    res.render("login.ejs");
+});
+
 //Create new article post
 app.post("/add-post", async (req, res) => {
     const { postTitle, postBody, postImageURL, authorName } = req.body;
@@ -523,7 +527,7 @@ app.get("/edit-fixture/:matchid", async (req, res) => {
         const matchid = req.params.matchid;
         const result = await db.query("SELECT * FROM MATCH WHERE MATCHID = $1", [matchid]);
 
-        res.render("fixtures/edit-fixtures.ejs", { fixture: result.rows[0], activePage: "fixtures" });
+        res.render("fixtures/edit-fixtures.ejs", { fixture: result.rows[0], activePage: "fix-res" });
     } catch (err) {
         console.error(err);
         res.status(500).send("Server error");
