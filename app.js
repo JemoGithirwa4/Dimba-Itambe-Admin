@@ -1,6 +1,10 @@
 import express from "express";
 import bodyParser from "body-parser";
 import pg from "pg";
+import bcrypt from "bcrypt";
+import session from "express-session";
+import passport from "passport";
+import { Strategy } from "passport-local";
 
 const PORT = process.env.PORT || 3006;
 
@@ -19,6 +23,18 @@ db.connect();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
+app.use(session({
+    secret: "DIMBASECRETOS",
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+        maxAge: 600000
+    }
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
 //Latest page routes
 let articles = [];
 let videos = [];
@@ -27,16 +43,20 @@ let players = [];
 let stats = [];
 
 app.get("/", async (req, res) => {
-    try {
-        const result = await db.query(
-            "SELECT * FROM Articles ORDER BY publisheddate DESC"
-        );
-        articles = result.rows;
-
-        res.render("home.ejs", { activePage: "latest", articles: articles });
-    } catch (err){
-        console.log(err);
-        res.status(500).send("Server Error");
+    if (req.isAuthenticated()){
+        try {
+            const result = await db.query(
+                "SELECT * FROM Articles ORDER BY publisheddate DESC"
+            );
+            articles = result.rows;
+    
+            res.render("home.ejs", { activePage: "latest", articles: articles });
+        } catch (err){
+            console.log(err);
+            res.status(500).send("Server Error");
+        }
+    } else {
+        res.redirect("/login");
     }
 });
 
@@ -45,7 +65,7 @@ app.get("/login", (req, res) => {
 });
 
 //Create new article post
-app.post("/add-post", async (req, res) => {
+app.post("/add-post", ensureAuthenticated, async (req, res) => {
     const { postTitle, postBody, postImageURL, authorName } = req.body;
 
     try {
@@ -57,7 +77,7 @@ app.post("/add-post", async (req, res) => {
     }
 });
 
-app.get("/view/:id", async(req, res) => {
+app.get("/view/:id", ensureAuthenticated, async(req, res) => {
     try {
         const articleId = req.params.id;
         const result = await db.query(
@@ -76,7 +96,7 @@ app.get("/view/:id", async(req, res) => {
 });
 
 //// Route to render the edit page
-app.get("/edit/:id", async (req, res) => {
+app.get("/edit/:id", ensureAuthenticated, async (req, res) => {
     try {
         const articleId = req.params.id;
         const result = await db.query(
@@ -97,7 +117,7 @@ app.get("/edit/:id", async (req, res) => {
 });
 
 // Partially update a post
-app.post("/update-posts/:id", async (req, res) => {
+app.post("/update-posts/:id", ensureAuthenticated, async (req, res) => {
     const postTitle = req.body.postTitle;
     const postBody = req.body.postBody;
     const postImageURL = req.body.postImageURL;
@@ -116,7 +136,7 @@ app.post("/update-posts/:id", async (req, res) => {
 });
 
 // Delete a post
-app.post("/delete/:id", async (req, res) => {
+app.post("/delete/:id", ensureAuthenticated, async (req, res) => {
     const id = req.params.id;
     try {
       await db.query("DELETE FROM articles WHERE articleid = $1", [id]);
@@ -128,7 +148,7 @@ app.post("/delete/:id", async (req, res) => {
   
 
 //Add a featured player
-app.post("/update-featured-player", async (req, res) => {
+app.post("/update-featured-player", ensureAuthenticated, async (req, res) => {
 
     try {
         await db.query("DELETE FROM featured_players");
@@ -146,12 +166,12 @@ app.post("/update-featured-player", async (req, res) => {
     }
 });
 
-app.get("/posts", (req, res) => {
+app.get("/posts", ensureAuthenticated, (req, res) => {
     res.render("blog/posts.ejs", { activePage: "latest" });
 });
 
 //Watch Page styles start here
-app.get("/watch", async (req, res) => {
+app.get("/watch", ensureAuthenticated, async (req, res) => {
     try {
         const result = await db.query(
             "SELECT * FROM video_highlights ORDER BY uploaded_at DESC"
@@ -165,11 +185,11 @@ app.get("/watch", async (req, res) => {
     }
 });
 
-app.get("/videos", (req, res) => {
+app.get("/videos", ensureAuthenticated, (req, res) => {
     res.render("watch/videos.ejs", { activePage: "watch" });
 });
 
-app.post("/video-upload", async (req, res) => {
+app.post("/video-upload", ensureAuthenticated, async (req, res) => {
     const { videoTitle, videoUrl } = req.body;
 
     try {
@@ -181,7 +201,7 @@ app.post("/video-upload", async (req, res) => {
     }
 });
 
-app.post("/delete-video/:id", async (req, res) => {
+app.post("/delete-video/:id", ensureAuthenticated, async (req, res) => {
     const id = req.params.id;
     try {
       await db.query("DELETE FROM video_highlights WHERE id = $1", [id]);
@@ -192,7 +212,7 @@ app.post("/delete-video/:id", async (req, res) => {
 });
 
 //Teams & Players page route
-app.get("/teams", async (req, res) => {
+app.get("/teams", ensureAuthenticated, async (req, res) => {
     try {
         const teamResult = await db.query(
             "SELECT * FROM team ORDER BY teamname ASC"
@@ -229,12 +249,12 @@ app.get("/teams", async (req, res) => {
     }
 });
 
-app.get("/new-team", (req, res) => {
+app.get("/new-team", ensureAuthenticated, (req, res) => {
     res.render("teams-players/newteam.ejs", { activePage: "teams" });
 });
 
 //Handle new team upload
-app.post("/upload-team", async (req, res) => {
+app.post("/upload-team", ensureAuthenticated, async (req, res) => {
     const { teamName, teamAbb, teamWebsite, teamCity, teamLogo } = req.body;
 
     try {
@@ -247,7 +267,7 @@ app.post("/upload-team", async (req, res) => {
 });
 
 //Handle editing team details
-app.get("/edit-team/:teamname", async (req, res) => {
+app.get("/edit-team/:teamname", ensureAuthenticated, async (req, res) => {
     try {
         const teamname = req.params.teamname;
         const result = await db.query(
@@ -267,7 +287,7 @@ app.get("/edit-team/:teamname", async (req, res) => {
 });
 
 //Edit team
-app.post("/edit-team", async (req, res) => {
+app.post("/edit-team", ensureAuthenticated, async (req, res) => {
     const { originalTeamName, teamName, teamAbb, teamWebsite, teamCity, teamLogo } = req.body;
 
     try {
@@ -283,7 +303,7 @@ app.post("/edit-team", async (req, res) => {
 });
 
 // Delete a team
-app.post("/delete/:teamname", async (req, res) => {
+app.post("/delete/:teamname", ensureAuthenticated, async (req, res) => {
     const teamname = req.params.teamname;
 
     try {
@@ -294,11 +314,11 @@ app.post("/delete/:teamname", async (req, res) => {
     }
 });
 
-app.get("/player", (req, res) => {
+app.get("/player", ensureAuthenticated, (req, res) => {
     res.render("teams-players/player.ejs", { activePage: "teams" });
 });
 
-app.post("/upload-player", async (req, res) => {
+app.post("/upload-player", ensureAuthenticated, async (req, res) => {
     const {
         firstName,
         middleName,
@@ -329,7 +349,7 @@ app.post("/upload-player", async (req, res) => {
 });
 
 //Handle editing team details
-app.get("/edit-player/:id", async (req, res) => {
+app.get("/edit-player/:id", ensureAuthenticated, async (req, res) => {
     try {
         const playerName = req.params.id;
         const result = await db.query(
@@ -349,7 +369,7 @@ app.get("/edit-player/:id", async (req, res) => {
 });
 
 //Edit player
-app.post("/edit-player", async (req, res) => {
+app.post("/edit-player", ensureAuthenticated, async (req, res) => {
     const {
         originalPlayerId, 
         firstName,
@@ -400,7 +420,7 @@ app.post("/edit-player", async (req, res) => {
 });
 
 //Delete player
-app.post("/delete-player/:id", async (req, res) => {
+app.post("/delete-player/:id", ensureAuthenticated, async (req, res) => {
     const playerId = req.params.id; 
 
     try {
@@ -413,7 +433,7 @@ app.post("/delete-player/:id", async (req, res) => {
 });
 
 //Player stats
-app.get("/edit-player-stats/:id", async (req, res) => {
+app.get("/edit-player-stats/:id", ensureAuthenticated, async (req, res) => {
     try {
         const playerId = req.params.id;
         const result = await db.query(`
@@ -435,7 +455,7 @@ app.get("/edit-player-stats/:id", async (req, res) => {
     }
 });
 
-app.post("/update-stats/:id", async (req, res) => {
+app.post("/update-stats/:id", ensureAuthenticated, async (req, res) => {
     try {
         const playerId = req.params.id;
         const { matches_played, minutes_played, goals, assists, yellowcards, redcards } = req.body;
@@ -461,7 +481,7 @@ app.post("/update-stats/:id", async (req, res) => {
 });
 
 //Refresh stats to include new players
-app.post("/refresh-stats", async (req, res) => {
+app.post("/refresh-stats", ensureAuthenticated, async (req, res) => {
     try {
         await db.query(`
             INSERT INTO stats (playerid, matches_played, minutes_played, goals, assists, yellowcards, redcards)
@@ -478,7 +498,7 @@ app.post("/refresh-stats", async (req, res) => {
 });
 
 //Fixtures and Results page
-app.get("/fixtures", async (req, res) => {
+app.get("/fixtures", ensureAuthenticated, async (req, res) => {
     try {
         const result = await db.query(`
             SELECT MATCHID, MDATE, MTIME, HOMETEAM, AWAYTEAM, HOME_SCORE, AWAY_SCORE, HOSTEDBY, STATUS
@@ -496,12 +516,12 @@ app.get("/fixtures", async (req, res) => {
     }
 });
 
-app.get("/add-fixture", (req, res) => {
+app.get("/add-fixture", ensureAuthenticated, (req, res) => {
     res.render("fixtures/add-fixture.ejs", { activePage: "fix-res" });
 });
 
 //Add fixture
-app.post("/add-fixture", async (req, res) => {
+app.post("/add-fixture", ensureAuthenticated, async (req, res) => {
     try {
         const { matchDate, kickoffTime, homeTeam, awayTeam, venue } = req.body;
 
@@ -522,7 +542,7 @@ app.post("/add-fixture", async (req, res) => {
 
 
 //Edit fixture
-app.get("/edit-fixture/:matchid", async (req, res) => {
+app.get("/edit-fixture/:matchid", ensureAuthenticated, async (req, res) => {
     try {
         const matchid = req.params.matchid;
         const result = await db.query("SELECT * FROM MATCH WHERE MATCHID = $1", [matchid]);
@@ -534,7 +554,7 @@ app.get("/edit-fixture/:matchid", async (req, res) => {
     }
 });
 
-app.post("/update-fixture/:id", async (req, res) => {
+app.post("/update-fixture/:id", ensureAuthenticated, async (req, res) => {
     try {
         const { hometeam, awayteam, venue, homescore, awayscore, status } = req.body;
         const fixtureId = req.params.id;
@@ -552,7 +572,7 @@ app.post("/update-fixture/:id", async (req, res) => {
 });
 
 //Delete fixture
-app.post("/delete-fixture/:id", async (req, res) => {
+app.post("/delete-fixture/:id", ensureAuthenticated, async (req, res) => {
     try {
         const matchId = req.params.id;
 
@@ -566,7 +586,7 @@ app.post("/delete-fixture/:id", async (req, res) => {
 });
 
 //Careers page
-app.get("/careers", async (req, res) => {
+app.get("/careers", ensureAuthenticated, async (req, res) => {
     try {
         const result = await db.query("SELECT * FROM jobs ORDER BY deadline ASC");
         res.render("careers.ejs", { activePage: "careers", jobs: result.rows });
@@ -576,11 +596,11 @@ app.get("/careers", async (req, res) => {
     }
 });
 
-app.get("/new-job", (req, res) => {
+app.get("/new-job", ensureAuthenticated, (req, res) => {
     res.render("careers/new-job.ejs", { activePage: "careers" });
 });
 
-app.post('/upload-job', async (req, res) => {
+app.post('/upload-job', ensureAuthenticated, async (req, res) => {
     const { title, description, location, job_type, openings, deadline, requirements, responsibilities } = req.body;
 
     try {
@@ -605,7 +625,7 @@ app.post('/upload-job', async (req, res) => {
     }
 });
 
-app.post("/careers/delete/:id", async (req, res) => {
+app.post("/careers/delete/:id", ensureAuthenticated, async (req, res) => {
     const id = req.params;
     try {
         await db.query("DELETE FROM jobs WHERE id = $1", [id]);
@@ -616,7 +636,7 @@ app.post("/careers/delete/:id", async (req, res) => {
     }
 });
 
-app.get("/standings", async (req, res) => {
+app.get("/standings", ensureAuthenticated, async (req, res) => {
     try {
         const result = await db.query("SELECT * FROM league_standings ORDER BY points DESC, goal_difference DESC");
         res.render("standings.ejs", { activePage: "standings", standings: result.rows });
@@ -627,7 +647,7 @@ app.get("/standings", async (req, res) => {
 });
 
 //Refresh league standings to include new teams
-app.post("/refresh-standings", async (req, res) => {
+app.post("/refresh-standings", ensureAuthenticated, async (req, res) => {
     try {
         await db.query(`
             INSERT INTO league_standings (team_id, matches_played, wins, draws, losses, goals_for, goals_against)
@@ -644,7 +664,7 @@ app.post("/refresh-standings", async (req, res) => {
 });
 
 //Render edit page for standings
-app.get("/edit-league-standings/:id", async (req, res) => {
+app.get("/edit-league-standings/:id", ensureAuthenticated, async (req, res) => {
     try {
         const team_id = req.params.id;
         const result = await db.query("SELECT * FROM league_standings WHERE id = $1", [team_id]);
@@ -661,7 +681,7 @@ app.get("/edit-league-standings/:id", async (req, res) => {
 });
 
 //Update standings
-app.post("/update-standing", async (req, res) => {
+app.post("/update-standing", ensureAuthenticated, async (req, res) => {
     try {
         const { id, matches_played, wins, draws, losses, goals_for, goals_against } = req.body;
 
@@ -678,9 +698,61 @@ app.post("/update-standing", async (req, res) => {
     }
 });
 
-app.get("/settings", (req, res) => {
-    res.render("settings/settings.ejs", { activePage: "settings" });
+app.get('/logout', (req, res) => {
+    req.session.destroy((err) => {
+        if (err) {
+            console.error("Error destroying session:", err);
+        }
+        req.logout(() => {}); // Passport logout
+        res.redirect('/login'); // Redirect to login page
+    });
 });
+
+app.post("/login", passport.authenticate("local", {
+    successRedirect: "/",
+    failureRedirect: "/login",
+}));
+
+passport.use(new Strategy(async function verify(username, password, cb) {
+    try {
+        const result = await db.query("SELECT * FROM admin_users WHERE email = $1", [username]);
+        
+        if (result.rows.length > 0) {
+            const user = result.rows[0];
+            const storedHashedPassword = user.password_hash; // Ensure column name matches DB
+            
+            bcrypt.compare(password, storedHashedPassword, (err, isMatch) => {
+                if (err) {
+                    return cb(err);
+                }
+                if (isMatch) {
+                    return cb(null, user);
+                } else {
+                    return cb(null, false);
+                }
+            });
+        } else {
+            return cb(null, false); // Return false for incorrect email
+        }
+    } catch (err) {
+        return cb(err);
+    }
+}));
+  
+passport.serializeUser((user, cb) => {
+    cb(null, user);
+});
+  
+passport.deserializeUser((user, cb) => {
+    cb(null, user);
+});
+
+function ensureAuthenticated(req, res, next) {
+    if (req.isAuthenticated()) {
+        return next();
+    }
+    res.redirect('/login');
+}  
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
