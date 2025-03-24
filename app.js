@@ -619,17 +619,45 @@ app.get('/update-goals/:matchid', async (req, res) => {
 //Update goal
 app.post('/update-goals/:matchid', async (req, res) => {
     const matchid = req.params.matchid;
-    const { playerid, time_min, teamname, goal_type } = req.body; // Ensure teamname is passed instead of teamid
+    let { playerid, time_min, teamname, goaltype } = req.body;
 
     try {
+        // Fetch player's actual team
+        const playerTeamResult = await db.query(
+            "SELECT teamname FROM player WHERE playerid = $1",
+            [playerid]
+        );
+
+        if (playerTeamResult.rows.length === 0) {
+            return res.status(400).send("Invalid player selected");
+        }
+
+        const playerTeam = playerTeamResult.rows[0].teamname;
+
+        // If it's an own goal, assign the goal to the OPPOSING team
+        if (goaltype === "Own Goal") {
+            const matchResult = await db.query(
+                "SELECT hometeam, awayteam FROM match WHERE matchid = $1",
+                [matchid]
+            );
+
+            if (matchResult.rows.length === 0) {
+                return res.status(400).send("Invalid match selected");
+            }
+
+            const { hometeam, awayteam } = matchResult.rows[0];
+
+            // Assign to the opposing team
+            teamname = (playerTeam === hometeam) ? awayteam : hometeam;
+        }
+
         // Insert new goal into the database
         await db.query(
             `INSERT INTO goal (matchid, playerid, time_min, teamname, goal_type) 
              VALUES ($1, $2, $3, $4, $5)`,
-            [matchid, playerid, time_min, teamname, goal_type]
+            [matchid, playerid, time_min, teamname, goaltype]
         );
 
-        // Redirect back to the update page
         res.redirect(`/update-goals/${matchid}`);
     } catch (err) {
         console.error(err);
