@@ -1,0 +1,58 @@
+<%- include("../partials/header.ejs") %>
+
+<div class="container card mt-5 p-3">
+    <h2 class="text-centre">Update Goals for <%= match.hometeam %> vs <%= match.awayteam %></h2>
+    
+    <form action="/update-goals/<%= match.matchid %>" method="POST">
+        <div class="mb-3">
+            <label for="playerid" class="form-label">Scorer</label>
+            <select name="playerid" id="playerid" class="form-control" required onchange="updateTeamName()">
+                <% players.forEach(player => { %>
+                    <option value="<%= player.playerid %>" data-team="<%= player.teamname %>">
+                        <%= player.lname %> - <%= player.teamname %>
+                    </option>
+                <% }); %>
+            </select>
+        </div>
+    
+        <div class="mb-3">
+            <label for="teamname" class="form-label">Team</label>
+            <input type="text" name="teamname" id="teamname" class="form-control" readonly>
+        </div>
+    
+        <div class="mb-3">
+            <label for="time_min" class="form-label">Minute Scored</label>
+            <input type="number" name="time_min" id="time_min" class="form-control" required min="1" max="120">
+        </div>
+    
+        <button type="submit" class="btn btn-success">Add Goal</button>
+    </form>
+    
+    <script>
+        function updateTeamName() {
+            let playerSelect = document.getElementById("playerid");
+            let selectedOption = playerSelect.options[playerSelect.selectedIndex];
+            let teamName = selectedOption.getAttribute("data-team");
+            document.getElementById("teamname").value = teamName;
+        }
+    
+        // Auto-fill on page load (in case first player is selected by default)
+        updateTeamName();
+    </script>    
+
+    <h3 class="mt-4">Current Goals</h3>
+    <ul class="list-group">
+        <% goals.forEach(goal => { %>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <%= goal.lname %> - <%= goal.time_min %>’ (<%= goal.teamname %>)
+                <form action="/delete-goal/<%= goal.goalid %>" method="POST" class="d-inline">
+                    <button type="submit" class="btn btn-sm btn-danger">
+                        <i class="fa-solid fa-trash"></i> Remove
+                    </button>
+                </form>
+            </li>
+        <% }); %>
+    </ul>
+</div>
+
+<%- include("../partials/footer.ejs") %>

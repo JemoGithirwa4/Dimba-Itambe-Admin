@@ -573,6 +573,83 @@ app.post("/update-fixture/:id", ensureAuthenticated, async (req, res) => {
     }
 });
 
+//Goal updates page
+app.get('/update-goals/:matchid', async (req, res) => {
+    const matchid = req.params.matchid;
+    
+    try {
+        // Fetch match details
+        const matchResult = await db.query(
+            "SELECT * FROM match WHERE matchid = $1", 
+            [matchid]
+        );
+        const match = matchResult.rows[0];  // Ensure we correctly extract the match data
+
+        // Fetch players from both teams in the match
+        const playersResult = await db.query(
+            `SELECT playerid, lname, teamname FROM player 
+             WHERE teamname IN (
+                SELECT hometeam FROM match WHERE matchid = $1 
+                UNION 
+                SELECT awayteam FROM match WHERE matchid = $1
+            )`,
+            [matchid]
+        );
+        const players = playersResult.rows;
+
+        // Fetch goals, replacing teamid with teamname
+        const goalsResult = await db.query(
+            `SELECT g.goalid, g.time_min, p.lname, g.teamname, g.goal_type 
+            FROM goal g 
+            JOIN player p ON g.playerid = p.playerid 
+            WHERE g.matchid = $1 
+            ORDER BY g.time_min ASC`,
+            [matchid]
+        );
+        const goals = goalsResult.rows;
+
+        // Render the page with retrieved data
+        res.render('fixtures/update-goals.ejs', { activePage: "fix-res", match, players, goals });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Error fetching match details");
+    }
+});
+
+//Update goal
+app.post('/update-goals/:matchid', async (req, res) => {
+    const matchid = req.params.matchid;
+    const { playerid, time_min, teamname, goal_type } = req.body; // Ensure teamname is passed instead of teamid
+
+    try {
+        // Insert new goal into the database
+        await db.query(
+            `INSERT INTO goal (matchid, playerid, time_min, teamname, goal_type) 
+             VALUES ($1, $2, $3, $4, $5)`,
+            [matchid, playerid, time_min, teamname, goal_type]
+        );
+
+        // Redirect back to the update page
+        res.redirect(`/update-goals/${matchid}`);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Error updating goals");
+    }
+});
+
+//Delete goal
+app.post('/delete-goal/:goalid', async (req, res) => {
+    const goalid = req.params.goalid;
+
+    try {
+        await db.query("DELETE FROM goal WHERE goalid = $1", [goalid]);
+        res.redirect(req.get("Referrer") || "/fixtures"); // Redirects back to the previous page
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Error deleting goal");
+    }
+});
+
 //Delete fixture
 app.post("/delete-fixture/:id", ensureAuthenticated, async (req, res) => {
     try {

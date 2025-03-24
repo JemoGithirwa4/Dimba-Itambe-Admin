@@ -52,12 +52,15 @@
                     <td><%= fixture.status %></td>
                     <td>
                       <a href="/edit-fixture/<%= fixture.matchid %>" class="btn btn-sm btn-warning">
-                        <i class="fa-solid fa-edit"></i> Edit
+                          <i class="fa-solid fa-edit"></i> Edit
+                      </a>
+                      <a href="/update-goals/<%= fixture.matchid %>" class="btn btn-sm btn-primary">
+                          <i class="fa-solid fa-futbol"></i> Goals
                       </a>
                       <form action="/delete-fixture/<%= fixture.matchid %>" method="POST" class="d-inline">
-                        <button type="submit" class="btn btn-sm btn-danger">
-                            <i class="fa-solid fa-trash"></i> Delete
-                        </button>
+                          <button type="submit" class="btn btn-sm btn-danger">
+                              <i class="fa-solid fa-trash"></i> Delete
+                          </button>
                       </form>
                     </td>
                   </tr>
