@@ -525,14 +525,14 @@ app.get("/add-fixture", ensureAuthenticated, (req, res) => {
 //Add fixture
 app.post("/add-fixture", ensureAuthenticated, async (req, res) => {
     try {
-        const { matchDate, kickoffTime, homeTeam, awayTeam, venue } = req.body;
+        const { matchDate, kickoffTime, homeTeam, awayTeam, venue, gw } = req.body;
 
         const insertQuery = `
-            INSERT INTO MATCH (MDATE, MTIME, HOMETEAM, AWAYTEAM, HOSTEDBY) 
-            VALUES ($1, $2, $3, $4, $5)
+            INSERT INTO MATCH (MDATE, MTIME, HOMETEAM, AWAYTEAM, HOSTEDBY, GAMEWEEK) 
+            VALUES ($1, $2, $3, $4, $5, $6)
         `;
 
-        await db.query(insertQuery, [matchDate, kickoffTime, homeTeam, awayTeam, venue]);
+        await db.query(insertQuery, [matchDate, kickoffTime, homeTeam, awayTeam, venue, gw]);
 
         res.redirect("/fixtures");
 
