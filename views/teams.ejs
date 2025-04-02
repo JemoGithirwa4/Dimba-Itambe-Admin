@@ -77,6 +77,14 @@
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
       <h1 class="h2">Players</h1>
       <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <form action="/search-player-stats" method="GET" class="d-flex mb-3 mx-5">
+                <input type="text" name="query" id="searchInput" class="form-control me-2" placeholder="Search by player name..." required>
+            </form>
+            <form action="/refresh-stats" method="POST">
+                <button type="submit" class="btn btn-success"><i class="fa-solid fa-arrow-rotate-right"></i> Refresh</button>
+            </form>            
+        </div>
         <div class="btn-group">
           <button type="button" class="btn btn-sm btn-outline-secondary" onclick="window.location.href='/player'">Add <i class="fa-solid fa-plus"></i></button>
         </div>
