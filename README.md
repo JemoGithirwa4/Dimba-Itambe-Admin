@@ -71,7 +71,7 @@ The watch page is for managing video highlights for played games.
 ![Featured players](public/images/demo/watch.PNG)
 
 ### 3.1 Video highlight 
-To add an article/blog click "Add +" button at the top right. 
+To add a video highlight click "Add +" button at the top right. 
 ![Video Add](public/images/demo/add-vid.PNG)
 
 Enter video details as specified and click "Upload Video" to add the video.
@@ -133,3 +133,61 @@ To edit a player stats click "Edit" button on the specific player.
 ![Edit Player](public/images/demo/edit-stat.PNG)
 
 Enter the updates and click "Update Stats".
+
+## 5. Fixtures & Results Page
+The page handles fixtures and results management.
+![Fixtures & results](public/images/demo/fix-res.PNG)
+
+### 5.1 Add Fixture
+To add a fixture click "Add +" button at the top right of the fixtures card. 
+![Fixture Add](public/images/demo/fix-add.PNG)
+![Fixture Add](public/images/demo/fix-add2.PNG)
+
+Enter fixture details and click "Add Fixture" to add the fixture.
+
+### 5.2 Edit Fixture 
+To edit a fixture click "Edit" button on the specific fixture row. 
+![Edit Fixture](public/images/demo/edit-fix.PNG)
+
+Enter the updates and click "Update Fixture".
+
+### 5.3 Goal
+To update goal scorer details click "Goal" button on the specific fixture row. 
+![Goal](public/images/demo/goal.PNG)
+![Goal](public/images/demo/goal.PNG)
+
+Select the goal scorer, select the goal type and enter the minute the goal was scored. Click "Add Goal" to update.
+To delete a goal just click "Remove" for the specific goal.
+
+### 5.4 Delete Fixture
+To delete a fixture click "Delete" button on the specific fixture row.
+
+## 6. Careers Page
+The page handles job openings management.
+![Careers](public/images/demo/career.PNG)
+
+### 6.1 Add Career
+To add a career click "Add +" button at the top right of the career card. 
+![Career Add](public/images/demo/add-career.PNG)
+![Career Add](public/images/demo/add-career2.PNG)
+
+Enter job details and click "Add Job" to add the job.
+
+### 6.2 Delete Job
+To delete a job click "Delete" button on the specific job row.
+
+## 7. League Standings Page
+The page handles league standings updates.
+![League Standings](public/images/demo/standings.PNG)
+
+To refresh so that newly added teams are added to the standings click the "Refresh" button at the top right corner of the standings card.
+
+### 7.1 Edit Standings
+To update league stats on a team click "Edit" button for the specific team row. 
+![Standings Edit](public/images/demo/edit-standings.PNG)
+![Standings Edit](public/images/demo/edit-standings2.PNG)
+
+Update the details and click "Update Standings" to complete the update.
+
+## 8. Log out
+To logout click the "Log out" tab on the side bar.
