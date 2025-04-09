@@ -240,7 +240,8 @@ app.get("/teams", ensureAuthenticated, async (req, res) => {
                 stats.yellowcards,
                 stats.redcards
             FROM stats
-            JOIN player ON stats.playerid = player.playerid;
+            JOIN player ON stats.playerid = player.playerid
+            ORDER BY stats.goals DESC, stats.assists DESC;
         `);
         stats = statsResult.rows;
 
@@ -305,7 +306,7 @@ app.post("/edit-team", ensureAuthenticated, async (req, res) => {
 });
 
 // Delete a team
-app.post("/delete/:teamname", ensureAuthenticated, async (req, res) => {
+app.post("/delete-team/:teamname", ensureAuthenticated, async (req, res) => {
     const teamname = req.params.teamname;
 
     try {
@@ -733,7 +734,7 @@ app.post('/upload-job', ensureAuthenticated, async (req, res) => {
 });
 
 app.post("/careers/delete/:id", ensureAuthenticated, async (req, res) => {
-    const id = req.params;
+    const id = req.params.id;
     try {
         await db.query("DELETE FROM jobs WHERE id = $1", [id]);
         res.redirect("/careers");
